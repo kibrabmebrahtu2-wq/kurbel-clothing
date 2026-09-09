@@ -1,0 +1,9 @@
+{
+  "name": "kibreab-ai",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@netlify/blobs": "^9.0.0"
+  }
+}
