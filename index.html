@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kibreab AI — Conversation Coach</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-logo">K</div>
+        <div>
+          <h2>Kibreab AI</h2>
+          <span>Conversation Coach</span>
+        </div>
+      </div>
+
+      <button class="new-chat" id="newChatBtn">
+        ＋ New conversation
+      </button>
+
+      <div class="search-box">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search conversations..."
+        >
+      </div>
+
+      <div class="conversation-list" id="conversationList"></div>
+
+      <div class="sidebar-bottom">
+        <button id="memoryBtn">🧠 Memory</button>
+        <button id="integrationsBtn">🔗 Integrations</button>
+      </div>
+
+    </aside>
+
+    <!-- MAIN CHAT -->
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <h1>Kibreab AI</h1>
+          <p>Your personal conversation coach</p>
+        </div>
+
+        <div class="status">
+          <span class="status-dot"></span>
+          AI Ready
+        </div>
+      </header>
+
+      <!-- STYLE SELECTOR -->
+      <section class="style-section">
+        <span class="style-label">Response style</span>
+
+        <div class="styles">
+          <button class="style-btn active" data-style="CONFIDENT">
+            😎 Confident
+          </button>
+
+          <button class="style-btn" data-style="FLIRTY">
+            😉 Flirty
+          </button>
+
+          <button class="style-btn" data-style="FUNNY">
+            😂 Funny
+          </button>
+
+          <button class="style-btn" data-style="ROMANTIC">
+            ❤️ Romantic
+          </button>
+
+          <button class="style-btn" data-style="CASUAL">
+            🙂 Casual
+          </button>
+        </div>
+      </section>
+
+      <!-- CHAT -->
+      <section class="chat-area" id="chatArea">
+
+        <div class="welcome" id="welcome">
+
+          <div class="welcome-icon">K</div>
+
+          <h2>Welcome to Kibreab AI</h2>
+
+          <p>
+            Send me a message or describe your conversation.
+            I'll help you create a natural, confident response.
+          </p>
+
+          <div class="quick-prompts">
+
+            <button data-prompt="She just said hey. Give me a confident reply.">
+              💬 She said "hey"
+            </button>
+
+            <button data-prompt="Give me a playful reply that keeps the conversation interesting.">
+              😏 Make it playful
+            </button>
+
+            <button data-prompt="She replied with a short answer. Help me keep the conversation going naturally.">
+              🔥 Keep it going
+            </button>
+
+            <button data-prompt="Give me three different replies with different levels of flirting.">
+              ✨ Give me options
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- INPUT -->
+      <section class="composer">
+
+        <div class="input-wrapper">
+
+          <textarea
+            id="messageInput"
+            rows="1"
+            placeholder="Tell Kibreab AI what she said..."
+          ></textarea>
+
+          <button id="sendBtn" class="send-btn">
+            ➤
+          </button>
+
+        </div>
+
+        <div class="composer-footer">
+          <span>
+            Kibreab AI can help with tone, flirting, confidence and conversation.
+          </span>
+
+          <label class="approval-toggle">
+            <input type="checkbox" id="approvalToggle" checked>
+            <span>Approval before sending</span>
+          </label>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- MEMORY MODAL -->
+  <div class="modal hidden" id="memoryModal">
+
+    <div class="modal-content">
+
+      <button class="close-btn" data-close="memoryModal">×</button>
+
+      <h2>🧠 Conversation Memory</h2>
+
+      <p>
+        Kibreab AI can remember useful conversation context so future
+        suggestions feel more natural.
+      </p>
+
+      <textarea
+        id="
