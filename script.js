@@ -13,11 +13,6 @@ const sendBtn = document.getElementById("sendBtn");
 const conversationList = document.getElementById("conversationList");
 const searchInput = document.getElementById("searchInput");
 
-
-// -------------------------
-// INITIALIZE
-// -------------------------
-
 function saveConversations() {
   localStorage.setItem(
     "kibreab_conversations",
@@ -46,11 +41,6 @@ function getCurrentConversation() {
   );
 }
 
-
-// -------------------------
-// CONVERSATION SIDEBAR
-// -------------------------
-
 function renderConversations(filter = "") {
   conversationList.innerHTML = "";
 
@@ -59,7 +49,6 @@ function renderConversations(filter = "") {
   );
 
   filtered.forEach(conversation => {
-
     const item = document.createElement("div");
 
     item.className =
@@ -78,13 +67,7 @@ function renderConversations(filter = "") {
   });
 }
 
-
-// -------------------------
-// RENDER MESSAGES
-// -------------------------
-
 function renderMessages() {
-
   const conversation = getCurrentConversation();
 
   chatArea.innerHTML = "";
@@ -95,7 +78,6 @@ function renderMessages() {
   }
 
   conversation.messages.forEach(message => {
-
     const messageElement = document.createElement("div");
 
     messageElement.className =
@@ -116,7 +98,6 @@ function renderMessages() {
     messageElement.appendChild(text);
 
     if (message.role === "assistant") {
-
       const actions = document.createElement("div");
 
       actions.className = "message-actions";
@@ -149,16 +130,9 @@ function renderMessages() {
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-
-// -------------------------
-// WELCOME SCREEN
-// -------------------------
-
 function showWelcome() {
-
   chatArea.innerHTML = `
     <div class="welcome">
-
       <div class="welcome-icon">K</div>
 
       <h2>Welcome to Kibreab AI</h2>
@@ -187,32 +161,18 @@ function showWelcome() {
         </button>
 
       </div>
-
     </div>
   `;
 
-  document
-    .querySelectorAll("[data-prompt]")
-    .forEach(button => {
-
-      button.addEventListener("click", () => {
-
-        messageInput.value = button.dataset.prompt;
-
-        messageInput.focus();
-
-      });
-
+  document.querySelectorAll("[data-prompt]").forEach(button => {
+    button.addEventListener("click", () => {
+      messageInput.value = button.dataset.prompt;
+      messageInput.focus();
     });
+  });
 }
 
-
-// -------------------------
-// SEND MESSAGE
-// -------------------------
-
 async function sendMessage(customMessage = null) {
-
   const text =
     customMessage !== null
       ? customMessage
@@ -225,6 +185,10 @@ async function sendMessage(customMessage = null) {
   }
 
   const conversation = getCurrentConversation();
+
+  // Save history BEFORE adding the new message.
+  // This prevents sending the same user message twice.
+  const previousMessages = conversation.messages.slice(-20);
 
   conversation.messages.push({
     role: "user",
@@ -254,15 +218,14 @@ async function sendMessage(customMessage = null) {
   `;
 
   chatArea.appendChild(loading);
-
   chatArea.scrollTop = chatArea.scrollHeight;
 
   sendBtn.disabled = true;
 
   try {
+    console.log("Sending request to:", API_URL);
 
     const response = await fetch(API_URL, {
-
       method: "POST",
 
       headers: {
@@ -270,32 +233,48 @@ async function sendMessage(customMessage = null) {
       },
 
       body: JSON.stringify({
-
-        userId: getUserId(),
-
         message: text,
-
         style: selectedStyle,
-
-        conversation: conversation.messages
-
+        conversation: previousMessages
       })
-
     });
 
-    if (!response.ok) {
-      throw new Error("Server error");
+    console.log("Backend status:", response.status);
+
+    const rawText = await response.text();
+
+    console.log("Backend response:", rawText);
+
+    let data;
+
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      throw new Error(
+        "The server returned an invalid response: " + rawText
+      );
     }
 
-    const data = await response.json();
-
-    loading.remove();
+    if (!response.ok) {
+      throw new Error(
+        data.details ||
+        data.error ||
+        `Server returned HTTP ${response.status}`
+      );
+    }
 
     const aiResponse =
       data.reply ||
       data.response ||
-      data.message ||
-      "I couldn't generate a response.";
+      data.message;
+
+    if (!aiResponse) {
+      throw new Error(
+        "The AI server responded successfully, but no reply was returned."
+      );
+    }
+
+    loading.remove();
 
     conversation.messages.push({
       role: "assistant",
@@ -303,48 +282,33 @@ async function sendMessage(customMessage = null) {
     });
 
     saveConversations();
-
     renderMessages();
 
   } catch (error) {
+    console.error("Kibreab AI error:", error);
 
     loading.remove();
 
     conversation.messages.push({
-
       role: "assistant",
-
       content:
-        "I couldn't connect to the AI server yet. Make sure your Netlify backend and OPENAI_API_KEY are configured."
-
+        "⚠️ AI connection error:\n\n" +
+        error.message
     });
 
     saveConversations();
-
     renderMessages();
 
-    console.error(error);
-
   } finally {
-
     sendBtn.disabled = false;
-
     messageInput.focus();
-
   }
 }
 
-
-// -------------------------
-// USER ID
-// -------------------------
-
 function getUserId() {
-
   let userId = localStorage.getItem("kibreab_user_id");
 
   if (!userId) {
-
     userId =
       "user_" +
       Math.random().toString(36).substring(2) +
@@ -359,23 +323,12 @@ function getUserId() {
   return userId;
 }
 
-
-// -------------------------
-// COPY
-// -------------------------
-
 async function copyText(text) {
-
   try {
-
     await navigator.clipboard.writeText(text);
-
     alert("Copied to clipboard!");
-
   } catch {
-
-    const textarea =
-      document.createElement("textarea");
+    const textarea = document.createElement("textarea");
 
     textarea.value = text;
 
@@ -388,117 +341,61 @@ async function copyText(text) {
     textarea.remove();
 
     alert("Copied to clipboard!");
-
   }
 }
 
-
-// -------------------------
-// APPROVE
-// -------------------------
-
 function approveMessage(text) {
-
   copyText(text);
 
   const approval =
     document.getElementById("approvalToggle");
 
   if (approval && approval.checked) {
-
     alert(
       "Approved. The response has been copied. Review it before sending."
     );
-
   }
-
 }
 
+document.querySelectorAll(".style-btn").forEach(button => {
+  button.addEventListener("click", () => {
 
-// -------------------------
-// STYLE BUTTONS
-// -------------------------
+    document
+      .querySelectorAll(".style-btn")
+      .forEach(btn =>
+        btn.classList.remove("active")
+      );
 
-document
-  .querySelectorAll(".style-btn")
-  .forEach(button => {
+    button.classList.add("active");
 
-    button.addEventListener("click", () => {
-
-      document
-        .querySelectorAll(".style-btn")
-        .forEach(btn =>
-          btn.classList.remove("active")
-        );
-
-      button.classList.add("active");
-
-      selectedStyle =
-        button.dataset.style;
-
-    });
-
+    selectedStyle =
+      button.dataset.style;
   });
-
-
-// -------------------------
-// SEND BUTTON
-// -------------------------
+});
 
 sendBtn.addEventListener("click", () => {
   sendMessage();
 });
 
-
-// -------------------------
-// ENTER TO SEND
-// -------------------------
-
 messageInput.addEventListener("keydown", event => {
-
   if (
     event.key === "Enter" &&
     !event.shiftKey
   ) {
-
     event.preventDefault();
-
     sendMessage();
-
   }
-
 });
-
-
-// -------------------------
-// NEW CHAT
-// -------------------------
 
 document
   .getElementById("newChatBtn")
   .addEventListener("click", () => {
-
     createConversation();
-
   });
 
-
-// -------------------------
-// SEARCH
-// -------------------------
-
 searchInput.addEventListener("input", () => {
-
-  renderConversations(
-    searchInput.value
-  );
-
+  renderConversations(searchInput.value);
 });
-
-
-// -------------------------
-// MEMORY
-// -------------------------
 
 document
   .getElementById("memoryBtn")
@@ -514,9 +411,7 @@ document
       localStorage.getItem(
         "kibreab_memory"
       ) || "";
-
   });
-
 
 document
   .getElementById("saveMemoryBtn")
@@ -535,13 +430,7 @@ document
     document
       .getElementById("memoryModal")
       .classList.add("hidden");
-
   });
-
-
-// -------------------------
-// INTEGRATIONS
-// -------------------------
 
 document
   .getElementById("integrationsBtn")
@@ -550,13 +439,7 @@ document
     document
       .getElementById("integrationsModal")
       .classList.remove("hidden");
-
   });
-
-
-// -------------------------
-// CLOSE MODALS
-// -------------------------
 
 document
   .querySelectorAll("[data-close]")
@@ -570,27 +453,15 @@ document
       document
         .getElementById(modalId)
         .classList.add("hidden");
-
     });
-
   });
 
-
-// -------------------------
-// START APP
-// -------------------------
-
 if (conversations.length === 0) {
-
   createConversation();
-
 } else {
-
   currentConversationId =
     conversations[0].id;
 
   renderConversations();
-
   renderMessages();
-
-}
+                                        }
