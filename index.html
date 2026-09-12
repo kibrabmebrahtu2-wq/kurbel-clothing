@@ -11,7 +11,6 @@
 
   <div class="app">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
 
       <div class="brand">
@@ -43,7 +42,6 @@
 
     </aside>
 
-    <!-- MAIN CHAT -->
     <main class="main">
 
       <header class="topbar">
@@ -58,11 +56,12 @@
         </div>
       </header>
 
-      <!-- STYLE SELECTOR -->
       <section class="style-section">
+
         <span class="style-label">Response style</span>
 
         <div class="styles">
+
           <button class="style-btn active" data-style="CONFIDENT">
             😎 Confident
           </button>
@@ -82,13 +81,14 @@
           <button class="style-btn" data-style="CASUAL">
             🙂 Casual
           </button>
+
         </div>
+
       </section>
 
-      <!-- CHAT -->
       <section class="chat-area" id="chatArea">
 
-        <div class="welcome" id="welcome">
+        <div class="welcome">
 
           <div class="welcome-icon">K</div>
 
@@ -123,7 +123,6 @@
 
       </section>
 
-      <!-- INPUT -->
       <section class="composer">
 
         <div class="input-wrapper">
@@ -141,14 +140,23 @@
         </div>
 
         <div class="composer-footer">
+
           <span>
             Kibreab AI can help with tone, flirting, confidence and conversation.
           </span>
 
           <label class="approval-toggle">
-            <input type="checkbox" id="approvalToggle" checked>
+
+            <input
+              type="checkbox"
+              id="approvalToggle"
+              checked
+            >
+
             <span>Approval before sending</span>
+
           </label>
+
         </div>
 
       </section>
@@ -159,18 +167,81 @@
 
 
   <!-- MEMORY MODAL -->
+
   <div class="modal hidden" id="memoryModal">
 
     <div class="modal-content">
 
-      <button class="close-btn" data-close="memoryModal">×</button>
+      <button
+        class="close-btn"
+        data-close="memoryModal"
+      >
+        ×
+      </button>
 
       <h2>🧠 Conversation Memory</h2>
 
       <p>
-        Kibreab AI can remember useful conversation context so future
-        suggestions feel more natural.
+        Save useful information about your conversation preferences.
       </p>
 
       <textarea
-        id="
+        id="memoryInput"
+        rows="6"
+        placeholder="Example: I prefer confident, playful replies..."
+      ></textarea>
+
+      <button id="saveMemoryBtn">
+        Save Memory
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- INTEGRATIONS MODAL -->
+
+  <div class="modal hidden" id="integrationsModal">
+
+    <div class="modal-content">
+
+      <button
+        class="close-btn"
+        data-close="integrationsModal"
+      >
+        ×
+      </button>
+
+      <h2>🔗 Integrations</h2>
+
+      <p>
+        Connect your communication tools to Kibreab AI.
+      </p>
+
+      <div class="integration-item">
+        <strong>Telegram</strong>
+        <span>Coming soon</span>
+      </div>
+
+      <div class="integration-item">
+        <strong>Instagram</strong>
+        <span>Official API integration</span>
+      </div>
+
+      <div class="integration-item">
+        <strong>Snapchat</strong>
+        <span>Official API availability required</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- IMPORTANT: LOAD JAVASCRIPT AFTER THE HTML -->
+
+  <script src="script.js"></script>
+
+</body>
+</html>
